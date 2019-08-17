@@ -15,12 +15,19 @@ class App extends Component {
   }
 
   login() {
-    alert('Need to implement the login() method in App.js!');
+    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/callback`);
+    window.location = `https://${process.env.REACT_APP_AUTH0_DOMAIN}/authorize?client_id=${process.env.REACT_APP_AUTH0_CLIENT_ID}&scope=openid%20profile%20email&redirect_uri=${redirectUri}&response_type=code`;
   }
 
   logout() {
     axios.post('/api/logout').then(() => {
       this.setState({ user: null });
+    });
+  }
+
+  componentDidMount() {
+    axios.get('/api/user-data').then(response => {
+      this.setState({ user: response.data.user || null });
     });
   }
 
@@ -42,8 +49,8 @@ class App extends Component {
 
   render() {
     const { user, secureDataResponse } = this.state;
+    console.log(user)
     const userData = JSON.stringify(user, null, 2);
-
     return (
       <div className="App">
         <header className="App-header">
